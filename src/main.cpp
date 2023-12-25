@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 void setup()
 {
     // Initialize digital pin LED_BUILTIN as an output.

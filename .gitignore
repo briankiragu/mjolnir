@@ -1,5 +1,8 @@
 # Build files
-build
+.pio
 
 # Editor config files
 .vscode
+
+# OS files
+.DS_Store
