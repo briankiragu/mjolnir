@@ -1,9 +1,7 @@
+#include <ArduinoMqttClient.h>
 #include <WiFi.h>
 
-void setupConnectivity(
-    WiFiServer *server,
-    const char *ssid,
-    const char *password)
+void setupConnectivity(const char *ssid, const char *password)
 {
     // Setup complete text.
     Serial.println("Mjolnir starting...");
@@ -25,6 +23,4 @@ void setupConnectivity(
     Serial.print("IP address: ");
     Serial.print(WiFi.localIP());
     Serial.println();
-
-    server->begin();
 }

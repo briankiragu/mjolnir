@@ -1,6 +1,4 @@
+#include <ArduinoMqttClient.h>
 #include <WiFi.h>
 
-extern void setupConnectivity(
-    WiFiServer *server,
-    const char *ssid,
-    const char *password);
+extern void setupConnectivity(const char *ssid, const char *password);
