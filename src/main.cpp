@@ -34,7 +34,7 @@ void setup()
     setupTrafficLights(RED_PIN, GREEN_PIN, BLUE_PIN);
 
     // Setup the Wi-Fi connection.
-    setupWiFi(ssid, password);
+    setupNetworkAccess(ssid, password);
 
     // Setup the MQTT connection.
     setupMQTT(&mqttClient, uuid, broker, port);
