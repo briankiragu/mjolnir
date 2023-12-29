@@ -1,6 +1,8 @@
 #include <Arduino.h>
-#include <TrafficLights.h>
 #include <WiFi.h>
+
+#include <Connectivity.h>
+#include <TrafficLights.h>
 
 const uint8_t RED_PIN = 15;
 const uint8_t GREEN_PIN = 2;
@@ -27,27 +29,8 @@ void setup()
     // Delay for pins to set.
     delay(10);
 
-    // Setup complete text.
-    Serial.println("Mjolnir starting...");
-    Serial.println();
-
-    Serial.print("Mjolnir connecting to: ");
-    Serial.print(ssid);
-    Serial.println();
-    WiFi.begin(ssid, password);
-
-    while (WiFi.status() != WL_CONNECTED)
-    {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println();
-
-    Serial.println("WiFi connected.");
-    Serial.print("IP address: ");
-    Serial.print(WiFi.localIP());
-    Serial.println();
-    server.begin();
+    // Setup the Wi-Fi connection.
+    setupConnectivity(&server, ssid, password);
 }
 
 void loop()
