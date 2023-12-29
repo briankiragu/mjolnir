@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include <TrafficLights.h>
 
-const uint8_t RED_PIN = 5;
-const uint8_t BLUE_PIN = 6;
-const uint8_t GREEN_PIN = 7;
+const uint8_t RED_PIN = 15;
+const uint8_t BLUE_PIN = 2;
+const uint8_t GREEN_PIN = 4;
 
 void setup()
 {
