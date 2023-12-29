@@ -11,3 +11,5 @@ extern void setupMQTT(
     String topic);
 
 extern void sendMessage(MqttClient *mqttClient, String topic, String message);
+
+extern void receiveMessage(MqttClient *mqttClient, int messageSize);

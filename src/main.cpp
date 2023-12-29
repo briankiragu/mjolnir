@@ -48,18 +48,30 @@ void loop()
     // which avoids being disconnected by the broker.
     mqttClient.poll();
 
-    // Turn the lights RED.
-    turnRed(RED_PIN, GREEN_PIN, BLUE_PIN);
-    sendMessage(&mqttClient, topic, "RED");
-    delay(1000);
+    // Parse any received messages.
+    int messageSize = mqttClient.parseMessage();
 
-    // Turn the lights AMBER.
-    turnAmber(RED_PIN, GREEN_PIN, BLUE_PIN);
-    sendMessage(&mqttClient, topic, "AMBER");
-    delay(1000);
+    // If any messages came in, processes them. If not,
+    // trigger statuses as usual.
+    if (messageSize)
+    {
+        receiveMessage(&mqttClient, messageSize);
+    }
+    else
+    {
+        // Turn the lights RED.
+        turnRed(RED_PIN, GREEN_PIN, BLUE_PIN);
+        sendMessage(&mqttClient, topic, "RED");
+        delay(1000);
 
-    // Turn the lights AMBER.
-    turnGreen(RED_PIN, GREEN_PIN, BLUE_PIN);
-    sendMessage(&mqttClient, topic, "GREEN");
-    delay(1000);
+        // Turn the lights AMBER.
+        turnAmber(RED_PIN, GREEN_PIN, BLUE_PIN);
+        sendMessage(&mqttClient, topic, "AMBER");
+        delay(1000);
+
+        // Turn the lights AMBER.
+        turnGreen(RED_PIN, GREEN_PIN, BLUE_PIN);
+        sendMessage(&mqttClient, topic, "GREEN");
+        delay(1000);
+    }
 }
