@@ -18,16 +18,8 @@ void setup()
     // Serial output.
     Serial.begin(115200);
 
-    // Built-in LED pin.
-    pinMode(LED_BUILTIN, OUTPUT);
-
-    // Traffic lights pins.
-    pinMode(RED_PIN, OUTPUT);
-    pinMode(GREEN_PIN, OUTPUT);
-    pinMode(BLUE_PIN, OUTPUT);
-
-    // Delay for pins to set.
-    delay(10);
+    // Setup the traffic light LED.
+    setupTrafficLights(RED_PIN, GREEN_PIN, BLUE_PIN);
 
     // Setup the Wi-Fi connection.
     setupConnectivity(&server, ssid, password);
