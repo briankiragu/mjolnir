@@ -1,7 +1,7 @@
 #include <ArduinoMqttClient.h>
 #include <WiFi.h>
 
-void setupConnectivity(String ssid, String password)
+void setupWiFi(String ssid, String password)
 {
     // Setup complete text.
     Serial.println("Mjolnir starting...");

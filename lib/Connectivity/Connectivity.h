@@ -1,7 +1,7 @@
 #include <ArduinoMqttClient.h>
 #include <WiFi.h>
 
-extern void setupConnectivity(String ssid, String password);
+extern void setupWiFi(String ssid, String password);
 
 extern void setupMQTT(
     MqttClient *mqttClient,

@@ -30,11 +30,11 @@ void setup()
     // Serial output.
     Serial.begin(115200);
 
-    // Setup the traffic light LED.
+    // Setup the traffic light LEDs.
     setupTrafficLights(RED_PIN, GREEN_PIN, BLUE_PIN);
 
     // Setup the Wi-Fi connection.
-    setupConnectivity(ssid, password);
+    setupWiFi(ssid, password);
 
     // Setup the MQTT connection.
     setupMQTT(&mqttClient, uuid, broker, port);
