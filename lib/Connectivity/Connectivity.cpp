@@ -25,10 +25,15 @@ void setupNetworkAccess(String ssid, String password)
     Serial.println();
 }
 
-void setupMQTT(MqttClient *mqttClient, String uuid, String broker, uint16_t port)
+void setupMQTT(
+    MqttClient *mqttClient,
+    String broker,
+    uint16_t port,
+    String deviceId,
+    String topic)
 {
     // Each client must have a unique client ID
-    mqttClient->setId(uuid);
+    mqttClient->setId(deviceId);
 
     Serial.print("Attempting to connect to the MQTT broker: ");
     Serial.println(broker);
@@ -44,6 +49,13 @@ void setupMQTT(MqttClient *mqttClient, String uuid, String broker, uint16_t port
 
     Serial.println("You're connected to the MQTT broker!");
     Serial.println();
+
+    Serial.print("Subscribing to topic: ");
+    Serial.print(topic);
+    Serial.println();
+
+    // Subscribe to the same topic to receive updates.
+    mqttClient->subscribe(topic);
 }
 
 void sendMessage(MqttClient *mqttClient, String topic, String message)
@@ -52,3 +64,5 @@ void sendMessage(MqttClient *mqttClient, String topic, String message)
     mqttClient->print(message);
     mqttClient->endMessage();
 }
+
+// void receiveMessage(MqttClient *mqttClient, String topic, String message)

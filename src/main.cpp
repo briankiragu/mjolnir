@@ -11,16 +11,17 @@ const uint8_t RED_PIN = 15;
 const uint8_t GREEN_PIN = 2;
 const uint8_t BLUE_PIN = 4;
 
+// Device ID.
+String deviceId = DEVICE_ID;
+
+// Network Access Credentials.
 String ssid = SECRET_SSID;
 String password = SECRET_PASS;
 
-// Device ID.
-String uuid = "018cb5ee-bce0-79fc-b2d6-bc97955d28f1";
-
-// MQTT variables.
-String broker = "test.mosquitto.org";
-uint16_t port = 1883;
-String topic = "mjolnir/" + uuid + "/statuses";
+// MQTT Credentials.
+String broker = MQTT_BROKER;
+uint16_t port = MQTT_PORT;
+String topic = MQTT_TOPIC;
 
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
@@ -37,13 +38,14 @@ void setup()
     setupNetworkAccess(ssid, password);
 
     // Setup the MQTT connection.
-    setupMQTT(&mqttClient, uuid, broker, port);
+    setupMQTT(&mqttClient, broker, port, deviceId, topic);
 }
 
 void loop()
 {
-    // call poll() regularly to allow the library to send MQTT keep alives which
-    // avoids being disconnected by the broker
+    // call poll() regularly to allow the library
+    // to send MQTT keep alives
+    // which avoids being disconnected by the broker.
     mqttClient.poll();
 
     // Turn the lights RED.

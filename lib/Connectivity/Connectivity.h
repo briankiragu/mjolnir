@@ -5,11 +5,9 @@ extern void setupNetworkAccess(String ssid, String password);
 
 extern void setupMQTT(
     MqttClient *mqttClient,
-    String uuid,
     String broker,
-    uint16_t port);
+    uint16_t port,
+    String deviceId,
+    String topic);
 
-extern void sendMessage(
-    MqttClient *mqttClient,
-    String topic,
-    String message);
+extern void sendMessage(MqttClient *mqttClient, String topic, String message);
