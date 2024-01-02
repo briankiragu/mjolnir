@@ -1,6 +1,3 @@
-#include <ArduinoMqttClient.h>
-#include <WiFi.h>
-
 extern void setupNetworkAccess(String ssid, String password);
 
 extern void setupMQTT(
@@ -12,9 +9,9 @@ extern void setupMQTT(
     uint16_t mqttPort,
     String inboundTopic);
 
-extern void sendMessage(
+extern void sendStatus(
     MqttClient *mqttClient,
     String outboundTopic,
-    String message);
+    TrafficStatuses status);
 
 extern void receiveMessage(MqttClient *mqttClient, int messageSize);

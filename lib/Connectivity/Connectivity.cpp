@@ -1,15 +1,12 @@
-#include <ArduinoMqttClient.h>
 #include <WiFi.h>
+
+#include <ArduinoMqttClient.h>
+
+#include <TrafficLights.h>
 
 void setupNetworkAccess(String ssid, String password)
 {
-    // Setup complete text.
-    Serial.println("Mjolnir starting...");
-    Serial.println();
-
-    Serial.print("Mjolnir connecting to: ");
-    Serial.print(ssid);
-    Serial.println();
+    Serial.print("Mjolnir connecting to SSID '" + ssid + "'");
     WiFi.begin(ssid, password);
 
     while (WiFi.status() != WL_CONNECTED)
@@ -21,8 +18,7 @@ void setupNetworkAccess(String ssid, String password)
 
     Serial.println("Wi-Fi connected.");
     Serial.print("IP address: ");
-    Serial.print(WiFi.localIP());
-    Serial.println();
+    Serial.println(WiFi.localIP());
 }
 
 void setupMQTT(
@@ -37,8 +33,8 @@ void setupMQTT(
     // Each client must have a unique client ID
     mqttClient->setId(deviceId);
 
-    // You can provide a username and password for authentication
-    mqttClient->setUsernamePassword(mqttUsername, mqttPassword);
+    // Provide the username and password for authentication
+    // mqttClient->setUsernamePassword(mqttUsername, mqttPassword);
 
     Serial.println(
         "Device ID '" + deviceId +
@@ -57,21 +53,22 @@ void setupMQTT(
     Serial.println(
         "Device ID '" + deviceId +
         "' is successfully connected to the MQTT broker!");
-    Serial.println();
 
     Serial.println(
         "Device ID '" + deviceId +
         "' is subscribing to topic '" + inboundTopic + "'");
-    Serial.println();
 
     // Subscribe to the inbound topic to receive updates.
     mqttClient->subscribe(inboundTopic);
 }
 
-void sendMessage(MqttClient *mqttClient, String outboundTopic, String message)
+void sendStatus(
+    MqttClient *mqttClient,
+    String outboundTopic,
+    TrafficStatuses status)
 {
     mqttClient->beginMessage(outboundTopic);
-    mqttClient->print(message);
+    mqttClient->print(status);
     mqttClient->endMessage();
 }
 
@@ -89,5 +86,4 @@ void receiveMessage(MqttClient *mqttClient, int messageSize)
     {
         Serial.print((char)mqttClient->read());
     }
-    Serial.println();
 }

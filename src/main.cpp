@@ -1,39 +1,45 @@
 #include <Arduino.h>
-#include <ArduinoMqttClient.h>
 #include <WiFi.h>
+
+#include <ArduinoMqttClient.h>
 
 #include "secrets.h"
 
-#include <Connectivity.h>
 #include <TrafficLights.h>
+#include <Connectivity.h>
 
 const uint8_t RED_PIN = 13;
 const uint8_t GREEN_PIN = 12;
 const uint8_t BLUE_PIN = 14;
 
 // Device ID.
-String deviceId = DEVICE_ID;
+const String deviceId = DEVICE_ID;
 
-// Network Access Credentials.
-String networkSSID = NETWORK_SSID;
-String networkPassword = NETWORK_PASS;
+// Network access credentials.
+const String networkSSID = NETWORK_SSID;
+const String networkPassword = NETWORK_PASS;
 
-// MQTT Credentials.
-String mqttUsername = MQTT_USERNAME;
-String mqttPassword = MQTT_PASSWORD;
-String mqttBroker = MQTT_BROKER;
-uint16_t mqttPort = MQTT_PORT;
+// MQTT credentials.
+const String mqttUsername = MQTT_USERNAME;
+const String mqttPassword = MQTT_PASSWORD;
+const String mqttBroker = MQTT_BROKER;
+const uint16_t mqttPort = MQTT_PORT;
 
-String mqttInboundTopic = MQTT_INBOUND_TOPIC;
-String mqttOutboundTopic = MQTT_OUTBOUND_TOPIC;
+// MQTT topics.
+const String mqttInboundTopic = MQTT_INBOUND_TOPIC;
+const String mqttOutboundTopic = MQTT_OUTBOUND_TOPIC;
 
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
+TrafficStatuses status;
+
 void setup()
 {
     // Serial output.
+    Serial.flush();
     Serial.begin(115200);
+    Serial.println();
 
     // Setup the traffic light LEDs.
     setupTrafficLights(RED_PIN, GREEN_PIN, BLUE_PIN);
@@ -50,6 +56,9 @@ void setup()
         mqttBroker,
         mqttPort,
         mqttInboundTopic);
+
+    // Setup complete text.
+    Serial.println("Setup complete. Mjolnir is starting.");
 }
 
 void loop()
@@ -71,18 +80,21 @@ void loop()
     else
     {
         // Turn the lights RED.
+        status = RED;
         turnRed(RED_PIN, GREEN_PIN, BLUE_PIN);
-        sendMessage(&mqttClient, mqttOutboundTopic, "RED");
+        sendStatus(&mqttClient, mqttOutboundTopic, status);
         delay(1000);
 
         // Turn the lights AMBER.
+        status = AMBER;
         turnAmber(RED_PIN, GREEN_PIN, BLUE_PIN);
-        sendMessage(&mqttClient, mqttOutboundTopic, "AMBER");
+        sendStatus(&mqttClient, mqttOutboundTopic, status);
         delay(1000);
 
         // Turn the lights AMBER.
+        status = GREEN;
         turnGreen(RED_PIN, GREEN_PIN, BLUE_PIN);
-        sendMessage(&mqttClient, mqttOutboundTopic, "GREEN");
+        sendStatus(&mqttClient, mqttOutboundTopic, status);
         delay(1000);
     }
 }
