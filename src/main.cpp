@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
+#include <Arduino_JSON.h>
 #include <ArduinoMqttClient.h>
 
 #include "secrets.h"
@@ -62,12 +63,26 @@ void setup()
     Serial.println("Setup complete. Mjolnir is starting.");
 }
 
+void onMqttMessage(int messageSize)
+{
+    JSONVar payload = receivePayload(&mqttClient, messageSize);
+    status = AMBER;
+    duration = payload["duration"];
+
+    turnColour(RED_PIN, GREEN_PIN, BLUE_PIN, status);
+    sendPayload(&mqttClient, mqttOutboundTopic, status, duration);
+    delay(duration);
+}
+
 void loop()
 {
     // call poll() regularly to allow the library
     // to send MQTT keep alives
     // which avoids being disconnected by the broker.
     mqttClient.poll();
+
+    // Check if there is an inbound message.
+    mqttClient.onMessage(onMqttMessage);
 
     // Turn the lights RED.
     status = RED;

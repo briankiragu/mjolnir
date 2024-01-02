@@ -1,5 +1,3 @@
-#include <Arduino_JSON.h>
-
 extern void setupNetworkAccess(String ssid, String password);
 
 extern void setupMQTT(

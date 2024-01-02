@@ -97,6 +97,9 @@ JSONVar receivePayload(MqttClient *mqttClient, int messageSize)
         payload += (char)mqttClient->read();
     }
 
+    // Log the incoming payload.
+    Serial.println("The payload is " + payload);
+
     // Return the contents.
     return JSON.parse(payload);
 }
