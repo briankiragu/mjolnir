@@ -5,11 +5,16 @@ extern void setupNetworkAccess(String ssid, String password);
 
 extern void setupMQTT(
     MqttClient *mqttClient,
-    String broker,
-    uint16_t port,
     String deviceId,
-    String topic);
+    String mqttUsername,
+    String mqttPassword,
+    String mqttBroker,
+    uint16_t mqttPort,
+    String inboundTopic);
 
-extern void sendMessage(MqttClient *mqttClient, String topic, String message);
+extern void sendMessage(
+    MqttClient *mqttClient,
+    String outboundTopic,
+    String message);
 
 extern void receiveMessage(MqttClient *mqttClient, int messageSize);

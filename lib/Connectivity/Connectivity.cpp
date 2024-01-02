@@ -27,18 +27,25 @@ void setupNetworkAccess(String ssid, String password)
 
 void setupMQTT(
     MqttClient *mqttClient,
-    String broker,
-    uint16_t port,
     String deviceId,
-    String topic)
+    String mqttUsername,
+    String mqttPassword,
+    String mqttBroker,
+    uint16_t mqttPort,
+    String inboundTopic)
 {
     // Each client must have a unique client ID
     mqttClient->setId(deviceId);
 
-    Serial.print("Attempting to connect to the MQTT broker: ");
-    Serial.println(broker);
+    // You can provide a username and password for authentication
+    mqttClient->setUsernamePassword(mqttUsername, mqttPassword);
 
-    if (!mqttClient->connect(broker.c_str(), port))
+    Serial.println(
+        "Device ID '" + deviceId +
+        "' is attempting to connect to the MQTT broker '" + mqttBroker +
+        "' on port '" + mqttPort + "'");
+
+    if (!mqttClient->connect(mqttBroker.c_str(), mqttPort))
     {
         Serial.print("MQTT connection failed! Error code = ");
         Serial.println(mqttClient->connectError());
@@ -47,20 +54,23 @@ void setupMQTT(
             ;
     }
 
-    Serial.println("You're connected to the MQTT broker!");
+    Serial.println(
+        "Device ID '" + deviceId +
+        "' is successfully connected to the MQTT broker!");
     Serial.println();
 
-    Serial.print("Subscribing to topic: ");
-    Serial.print(topic);
+    Serial.println(
+        "Device ID '" + deviceId +
+        "' is subscribing to topic '" + inboundTopic + "'");
     Serial.println();
 
-    // Subscribe to the same topic to receive updates.
-    mqttClient->subscribe(topic);
+    // Subscribe to the inbound topic to receive updates.
+    mqttClient->subscribe(inboundTopic);
 }
 
-void sendMessage(MqttClient *mqttClient, String topic, String message)
+void sendMessage(MqttClient *mqttClient, String outboundTopic, String message)
 {
-    mqttClient->beginMessage(topic);
+    mqttClient->beginMessage(outboundTopic);
     mqttClient->print(message);
     mqttClient->endMessage();
 }

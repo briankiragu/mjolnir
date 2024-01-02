@@ -7,21 +7,25 @@
 #include <Connectivity.h>
 #include <TrafficLights.h>
 
-const uint8_t RED_PIN = 15;
-const uint8_t GREEN_PIN = 2;
-const uint8_t BLUE_PIN = 4;
+const uint8_t RED_PIN = 13;
+const uint8_t GREEN_PIN = 12;
+const uint8_t BLUE_PIN = 14;
 
 // Device ID.
 String deviceId = DEVICE_ID;
 
 // Network Access Credentials.
-String ssid = SECRET_SSID;
-String password = SECRET_PASS;
+String networkSSID = NETWORK_SSID;
+String networkPassword = NETWORK_PASS;
 
 // MQTT Credentials.
-String broker = MQTT_BROKER;
-uint16_t port = MQTT_PORT;
-String topic = MQTT_TOPIC;
+String mqttUsername = MQTT_USERNAME;
+String mqttPassword = MQTT_PASSWORD;
+String mqttBroker = MQTT_BROKER;
+uint16_t mqttPort = MQTT_PORT;
+
+String mqttInboundTopic = MQTT_INBOUND_TOPIC;
+String mqttOutboundTopic = MQTT_OUTBOUND_TOPIC;
 
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
@@ -35,10 +39,17 @@ void setup()
     setupTrafficLights(RED_PIN, GREEN_PIN, BLUE_PIN);
 
     // Setup the Wi-Fi connection.
-    setupNetworkAccess(ssid, password);
+    setupNetworkAccess(networkSSID, networkPassword);
 
     // Setup the MQTT connection.
-    setupMQTT(&mqttClient, broker, port, deviceId, topic);
+    setupMQTT(
+        &mqttClient,
+        deviceId,
+        mqttUsername,
+        mqttPassword,
+        mqttBroker,
+        mqttPort,
+        mqttInboundTopic);
 }
 
 void loop()
@@ -61,17 +72,17 @@ void loop()
     {
         // Turn the lights RED.
         turnRed(RED_PIN, GREEN_PIN, BLUE_PIN);
-        sendMessage(&mqttClient, topic, "RED");
+        sendMessage(&mqttClient, mqttOutboundTopic, "RED");
         delay(1000);
 
         // Turn the lights AMBER.
         turnAmber(RED_PIN, GREEN_PIN, BLUE_PIN);
-        sendMessage(&mqttClient, topic, "AMBER");
+        sendMessage(&mqttClient, mqttOutboundTopic, "AMBER");
         delay(1000);
 
         // Turn the lights AMBER.
         turnGreen(RED_PIN, GREEN_PIN, BLUE_PIN);
-        sendMessage(&mqttClient, topic, "GREEN");
+        sendMessage(&mqttClient, mqttOutboundTopic, "GREEN");
         delay(1000);
     }
 }
