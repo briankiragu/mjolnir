@@ -5,7 +5,7 @@
 
 #include "secrets.h"
 
-#include <TrafficLights.h>
+#include <TrafficLight.h>
 #include <Connectivity.h>
 
 const uint8_t RED_PIN = 13;
@@ -33,6 +33,7 @@ WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
 TrafficStatuses status;
+uint16_t duration;
 
 void setup()
 {
@@ -68,33 +69,24 @@ void loop()
     // which avoids being disconnected by the broker.
     mqttClient.poll();
 
-    // Parse any received messages.
-    int messageSize = mqttClient.parseMessage();
+    // Turn the lights RED.
+    status = RED;
+    duration = 3000;
+    turnColour(RED_PIN, GREEN_PIN, BLUE_PIN, status);
+    sendPayload(&mqttClient, mqttOutboundTopic, status, duration);
+    delay(duration);
 
-    // If any messages came in, processes them. If not,
-    // trigger statuses as usual.
-    if (messageSize)
-    {
-        receiveMessage(&mqttClient, messageSize);
-    }
-    else
-    {
-        // Turn the lights RED.
-        status = RED;
-        turnRed(RED_PIN, GREEN_PIN, BLUE_PIN);
-        sendStatus(&mqttClient, mqttOutboundTopic, status);
-        delay(1000);
+    // Turn the lights AMBER.
+    status = AMBER;
+    duration = 2000;
+    turnColour(RED_PIN, GREEN_PIN, BLUE_PIN, status);
+    sendPayload(&mqttClient, mqttOutboundTopic, status, duration);
+    delay(duration);
 
-        // Turn the lights AMBER.
-        status = AMBER;
-        turnAmber(RED_PIN, GREEN_PIN, BLUE_PIN);
-        sendStatus(&mqttClient, mqttOutboundTopic, status);
-        delay(1000);
-
-        // Turn the lights AMBER.
-        status = GREEN;
-        turnGreen(RED_PIN, GREEN_PIN, BLUE_PIN);
-        sendStatus(&mqttClient, mqttOutboundTopic, status);
-        delay(1000);
-    }
+    // Turn the lights GREEN.
+    status = GREEN;
+    duration = 5000;
+    turnColour(RED_PIN, GREEN_PIN, BLUE_PIN, status);
+    sendPayload(&mqttClient, mqttOutboundTopic, status, duration);
+    delay(duration);
 }

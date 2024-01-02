@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include <TrafficLight.h>
+
 void setupTrafficLights(uint8_t RED_PIN, uint8_t GREEN_PIN, uint8_t BLUE_PIN)
 {
     // Built-in LED pin.
@@ -33,4 +35,29 @@ void turnGreen(uint8_t RED_PIN, uint8_t GREEN_PIN, uint8_t BLUE_PIN)
     analogWrite(RED_PIN, 84);
     analogWrite(GREEN_PIN, 156);
     analogWrite(BLUE_PIN, 48);
+}
+
+void turnColour(
+    uint8_t RED_PIN,
+    uint8_t GREEN_PIN,
+    uint8_t BLUE_PIN,
+    TrafficStatuses status)
+{
+    switch (status)
+    {
+    case RED:
+        turnRed(RED_PIN, GREEN_PIN, BLUE_PIN);
+        break;
+
+    case AMBER:
+        turnAmber(RED_PIN, GREEN_PIN, BLUE_PIN);
+        break;
+
+    case GREEN:
+        turnGreen(RED_PIN, GREEN_PIN, BLUE_PIN);
+        break;
+
+    default:
+        break;
+    }
 }

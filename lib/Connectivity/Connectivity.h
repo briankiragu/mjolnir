@@ -1,3 +1,5 @@
+#include <Arduino_JSON.h>
+
 extern void setupNetworkAccess(String ssid, String password);
 
 extern void setupMQTT(
@@ -9,9 +11,10 @@ extern void setupMQTT(
     uint16_t mqttPort,
     String inboundTopic);
 
-extern void sendStatus(
+extern void sendPayload(
     MqttClient *mqttClient,
     String outboundTopic,
-    TrafficStatuses status);
+    TrafficStatuses status,
+    uint16_t duration);
 
-extern void receiveMessage(MqttClient *mqttClient, int messageSize);
+extern JSONVar receivePayload(MqttClient *mqttClient, int messageSize);

@@ -1,8 +1,9 @@
 #include <WiFi.h>
 
+#include <Arduino_JSON.h>
 #include <ArduinoMqttClient.h>
 
-#include <TrafficLights.h>
+#include <TrafficLight.h>
 
 void setupNetworkAccess(String ssid, String password)
 {
@@ -62,18 +63,27 @@ void setupMQTT(
     mqttClient->subscribe(inboundTopic);
 }
 
-void sendStatus(
+void sendPayload(
     MqttClient *mqttClient,
     String outboundTopic,
-    TrafficStatuses status)
+    TrafficStatuses status,
+    uint16_t duration)
 {
+    // Build the JSON object.
+    JSONVar payload;
+    payload["status"] = status;
+    payload["duration"] = duration;
+
     mqttClient->beginMessage(outboundTopic);
-    mqttClient->print(status);
+    mqttClient->print(JSON.stringify(payload));
     mqttClient->endMessage();
 }
 
-void receiveMessage(MqttClient *mqttClient, int messageSize)
+JSONVar receivePayload(MqttClient *mqttClient, int messageSize)
 {
+    // Variable to store the incoming message.
+    String payload;
+
     // We received a message, print out the topic and contents
     Serial.println("Received a message with topic '");
     Serial.print(mqttClient->messageTopic());
@@ -81,9 +91,12 @@ void receiveMessage(MqttClient *mqttClient, int messageSize)
     Serial.print(messageSize);
     Serial.println(" bytes:");
 
-    // use the Stream interface to print the contents
+    // use the Stream interface to get the contents
     while (mqttClient->available())
     {
-        Serial.print((char)mqttClient->read());
+        payload += (char)mqttClient->read();
     }
+
+    // Return the contents.
+    return JSON.parse(payload);
 }
