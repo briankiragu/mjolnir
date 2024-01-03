@@ -2,7 +2,10 @@
 #include <TrafficLight.h>
 
 // Constructor
-TrafficLight::TrafficLight(uint8_t RED_PIN, uint8_t GREEN_PIN, uint8_t BLUE_PIN)
+TrafficLight::TrafficLight(
+    const uint8_t RED_PIN,
+    const uint8_t GREEN_PIN,
+    const uint8_t BLUE_PIN)
 {
     redPin = RED_PIN;
     greenPin = GREEN_PIN;
@@ -46,9 +49,17 @@ void TrafficLight::setup()
     delay(10);
 }
 
-void TrafficLight::turnColour(TrafficStatuses status)
+/// @brief Update the status and duration.
+/// @param status
+/// @param duration
+void TrafficLight::turnColour(TrafficStatuses status, uint16_t duration)
 {
-    switch (status)
+    // Update the traffic light's status and duration.
+    setStatus(status);
+    setDuration(duration);
+
+    // Change the color depending on the status.
+    switch (getStatus())
     {
     case RED:
         turnRed();
@@ -65,6 +76,9 @@ void TrafficLight::turnColour(TrafficStatuses status)
     default:
         break;
     }
+
+    // Maintain the colour for the specified duration.
+    delay(getDuration());
 }
 
 void TrafficLight::turnRed()

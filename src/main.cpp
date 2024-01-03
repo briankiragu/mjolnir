@@ -35,6 +35,31 @@ MqttClient mqttClient(wifiClient);
 
 TrafficLight trafficLight(RED_PIN, GREEN_PIN, BLUE_PIN);
 
+void updateTraffic(TrafficStatuses status, uint16_t duration)
+{
+    // Update the traffic light's colour to the status.
+    trafficLight.turnColour(status, duration);
+
+    // Send the data over MQTT.
+    sendPayload(
+        &mqttClient,
+        mqttOutboundTopic,
+        trafficLight.getStatus(),
+        trafficLight.getDuration());
+
+    // Set the colour for the duration specified.
+    delay(trafficLight.getDuration());
+}
+
+void onMqttMessage(int messageSize)
+{
+    // Receive, parse and return the incoming data from MQTT.
+    JSONVar payload = receivePayload(&mqttClient, messageSize);
+
+    // Update the traffic light's colour to the status.
+    updateTraffic(AMBER, payload["duration"]);
+}
+
 void setup()
 {
     // Serial output.
@@ -60,38 +85,6 @@ void setup()
 
     // Setup complete text.
     Serial.println("Setup complete. Mjolnir is starting.");
-}
-
-void onMqttMessage(int messageSize)
-{
-    JSONVar payload = receivePayload(&mqttClient, messageSize);
-
-    trafficLight.setStatus(AMBER);
-    trafficLight.setDuration(payload["duration"]);
-
-    trafficLight.turnColour(trafficLight.getStatus());
-    sendPayload(&mqttClient, mqttOutboundTopic, trafficLight.getStatus(), trafficLight.getDuration());
-    delay(trafficLight.getDuration());
-}
-
-void updateTraffic(TrafficStatuses status, uint16_t duration)
-{
-    // Update the traffic light's status.
-    trafficLight.setStatus(status);
-    trafficLight.setDuration(duration);
-
-    // Turn the lights RED.
-    trafficLight.turnColour(trafficLight.getStatus());
-
-    // Send the data over MQTT.
-    sendPayload(
-        &mqttClient,
-        mqttOutboundTopic,
-        trafficLight.getStatus(),
-        trafficLight.getDuration());
-
-    // Set the colour for the duration specified.
-    delay(trafficLight.getDuration());
 }
 
 void loop()

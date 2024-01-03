@@ -24,7 +24,10 @@ private:
 
 public:
     // Constructor.
-    TrafficLight(uint8_t RED_PIN, uint8_t GREEN_PIN, uint8_t BLUE_PIN);
+    TrafficLight(
+        const uint8_t RED_PIN,
+        const uint8_t GREEN_PIN,
+        const uint8_t BLUE_PIN);
 
     // Getters.
     TrafficStatuses getStatus();
@@ -34,11 +37,11 @@ public:
     void setStatus(TrafficStatuses s);
     void setDuration(uint16_t d);
 
-    // Setup.
+    // Initialise pins on microcontroller.
     void setup();
 
     // Other methods.
-    void turnColour(TrafficStatuses status);
+    void turnColour(TrafficStatuses status, uint16_t duration);
 };
 
 #endif
