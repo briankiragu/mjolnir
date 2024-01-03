@@ -33,8 +33,7 @@ const String mqttOutboundTopic = MQTT_OUTBOUND_TOPIC;
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
-TrafficStatuses status;
-uint16_t duration;
+TrafficLight trafficLight(RED_PIN, GREEN_PIN, BLUE_PIN);
 
 void setup()
 {
@@ -44,7 +43,7 @@ void setup()
     Serial.println();
 
     // Setup the traffic light LEDs.
-    setupTrafficLights(RED_PIN, GREEN_PIN, BLUE_PIN);
+    trafficLight.setup();
 
     // Setup the Wi-Fi connection.
     setupNetworkAccess(networkSSID, networkPassword);
@@ -66,17 +65,38 @@ void setup()
 void onMqttMessage(int messageSize)
 {
     JSONVar payload = receivePayload(&mqttClient, messageSize);
-    status = AMBER;
-    duration = payload["duration"];
 
-    turnColour(RED_PIN, GREEN_PIN, BLUE_PIN, status);
-    sendPayload(&mqttClient, mqttOutboundTopic, status, duration);
-    delay(duration);
+    trafficLight.setStatus(AMBER);
+    trafficLight.setDuration(payload["duration"]);
+
+    trafficLight.turnColour(trafficLight.getStatus());
+    sendPayload(&mqttClient, mqttOutboundTopic, trafficLight.getStatus(), trafficLight.getDuration());
+    delay(trafficLight.getDuration());
+}
+
+void updateTraffic(TrafficStatuses status, uint16_t duration)
+{
+    // Update the traffic light's status.
+    trafficLight.setStatus(status);
+    trafficLight.setDuration(duration);
+
+    // Turn the lights RED.
+    trafficLight.turnColour(trafficLight.getStatus());
+
+    // Send the data over MQTT.
+    sendPayload(
+        &mqttClient,
+        mqttOutboundTopic,
+        trafficLight.getStatus(),
+        trafficLight.getDuration());
+
+    // Set the colour for the duration specified.
+    delay(trafficLight.getDuration());
 }
 
 void loop()
 {
-    // call poll() regularly to allow the library
+    // Call poll() regularly to allow the library
     // to send MQTT keep alives
     // which avoids being disconnected by the broker.
     mqttClient.poll();
@@ -84,24 +104,12 @@ void loop()
     // Check if there is an inbound message.
     mqttClient.onMessage(onMqttMessage);
 
-    // Turn the lights RED.
-    status = RED;
-    duration = 3000;
-    turnColour(RED_PIN, GREEN_PIN, BLUE_PIN, status);
-    sendPayload(&mqttClient, mqttOutboundTopic, status, duration);
-    delay(duration);
+    // Update the traffic light and status to RED.
+    updateTraffic(RED, 3000);
 
-    // Turn the lights AMBER.
-    status = AMBER;
-    duration = 2000;
-    turnColour(RED_PIN, GREEN_PIN, BLUE_PIN, status);
-    sendPayload(&mqttClient, mqttOutboundTopic, status, duration);
-    delay(duration);
+    // Update the traffic light and status to AMBER.
+    updateTraffic(AMBER, 2000);
 
-    // Turn the lights GREEN.
-    status = GREEN;
-    duration = 5000;
-    turnColour(RED_PIN, GREEN_PIN, BLUE_PIN, status);
-    sendPayload(&mqttClient, mqttOutboundTopic, status, duration);
-    delay(duration);
+    // Update the traffic light and status to GREEN.
+    updateTraffic(GREEN, 5000);
 }
