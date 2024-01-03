@@ -44,13 +44,14 @@ Connectivity connection(
 
 void updateTraffic(TrafficStatuses status, uint16_t duration)
 {
+    // Initialise the payload.
+    MQTTPayload payload = {status, duration};
+
     // Update the traffic light's colour to the status.
     trafficLight.updateColourAndDuration(status, duration);
 
     // Send the data over MQTT.
-    connection.sendMQTTPayload(
-        trafficLight.getStatus(),
-        trafficLight.getDuration());
+    connection.sendMQTTPayload(payload);
 }
 
 void onMqttMessage(int messageSize)
@@ -59,7 +60,7 @@ void onMqttMessage(int messageSize)
     MQTTPayload payload = connection.receiveMQTTPayload(messageSize);
 
     // Update the traffic light's colour to the status.
-    updateTraffic(payload.status, payload.duration);
+    updateTraffic((TrafficStatuses)payload.status, payload.duration);
 }
 
 void setup()

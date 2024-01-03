@@ -3,7 +3,7 @@
 
 struct MQTTPayload
 {
-    TrafficStatuses status;
+    uint8_t status;
     uint16_t duration;
 };
 
@@ -43,7 +43,7 @@ public:
     void setupMQTT(const String mqttBroker, const uint16_t mqttPort);
 
     // Send data over MQTT.
-    void sendMQTTPayload(TrafficStatuses status, uint16_t duration);
+    void sendMQTTPayload(MQTTPayload payload);
 
     // Receive data over MQTT.
     MQTTPayload receiveMQTTPayload(int messageSize);

@@ -111,15 +111,15 @@ void Connectivity::setupMQTT(const String mqttBroker, const uint16_t mqttPort)
     getMqttClient()->subscribe(getMqttInboundTopic());
 }
 
-void Connectivity::sendMQTTPayload(TrafficStatuses status, uint16_t duration)
+void Connectivity::sendMQTTPayload(MQTTPayload payload)
 {
     // Build the JSON object.
-    JSONVar payload;
-    payload["status"] = status;
-    payload["duration"] = duration;
+    JSONVar data;
+    data["status"] = payload.status;
+    data["duration"] = payload.duration;
 
     getMqttClient()->beginMessage(getMqttOutboundTopic());
-    getMqttClient()->print(JSON.stringify(payload));
+    getMqttClient()->print(JSON.stringify(data));
     getMqttClient()->endMessage();
 }
 
@@ -150,8 +150,7 @@ MQTTPayload Connectivity::receiveMQTTPayload(int messageSize)
     parsedData = JSON.parse(data);
 
     // Update the struct.
-    // payload.status = parsedData["status"];
-    payload.status = GREEN;
+    payload.status = parsedData["status"];
     payload.duration = parsedData["duration"];
 
     // Return the contents.
