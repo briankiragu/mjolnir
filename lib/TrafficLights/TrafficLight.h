@@ -40,8 +40,8 @@ public:
     // Initialise pins on microcontroller.
     void setup();
 
-    // Other methods.
-    void turnColour(TrafficStatuses status, uint16_t duration);
+    // Update the colour and duration.
+    void updateColourAndDuration(TrafficStatuses status, uint16_t duration);
 };
 
 #endif

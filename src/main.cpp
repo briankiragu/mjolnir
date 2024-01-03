@@ -38,7 +38,7 @@ TrafficLight trafficLight(RED_PIN, GREEN_PIN, BLUE_PIN);
 void updateTraffic(TrafficStatuses status, uint16_t duration)
 {
     // Update the traffic light's colour to the status.
-    trafficLight.turnColour(status, duration);
+    trafficLight.updateColourAndDuration(status, duration);
 
     // Send the data over MQTT.
     sendPayload(
@@ -46,9 +46,6 @@ void updateTraffic(TrafficStatuses status, uint16_t duration)
         mqttOutboundTopic,
         trafficLight.getStatus(),
         trafficLight.getDuration());
-
-    // Set the colour for the duration specified.
-    delay(trafficLight.getDuration());
 }
 
 void onMqttMessage(int messageSize)

@@ -34,6 +34,27 @@ void TrafficLight::setDuration(uint16_t d)
     duration = d;
 }
 
+void TrafficLight::turnRed()
+{
+    analogWrite(redPin, 184);
+    analogWrite(greenPin, 27);
+    analogWrite(bluePin, 14);
+}
+
+void TrafficLight::turnAmber()
+{
+    analogWrite(redPin, 247);
+    analogWrite(greenPin, 181);
+    analogWrite(bluePin, 0);
+}
+
+void TrafficLight::turnGreen()
+{
+    analogWrite(redPin, 84);
+    analogWrite(greenPin, 156);
+    analogWrite(bluePin, 48);
+}
+
 /// @brief Initialise pins
 void TrafficLight::setup()
 {
@@ -52,7 +73,9 @@ void TrafficLight::setup()
 /// @brief Update the status and duration.
 /// @param status
 /// @param duration
-void TrafficLight::turnColour(TrafficStatuses status, uint16_t duration)
+void TrafficLight::updateColourAndDuration(
+    TrafficStatuses status,
+    uint16_t duration)
 {
     // Update the traffic light's status and duration.
     setStatus(status);
@@ -79,25 +102,4 @@ void TrafficLight::turnColour(TrafficStatuses status, uint16_t duration)
 
     // Maintain the colour for the specified duration.
     delay(getDuration());
-}
-
-void TrafficLight::turnRed()
-{
-    analogWrite(redPin, 184);
-    analogWrite(greenPin, 27);
-    analogWrite(bluePin, 14);
-}
-
-void TrafficLight::turnAmber()
-{
-    analogWrite(redPin, 247);
-    analogWrite(greenPin, 181);
-    analogWrite(bluePin, 0);
-}
-
-void TrafficLight::turnGreen()
-{
-    analogWrite(redPin, 84);
-    analogWrite(greenPin, 156);
-    analogWrite(bluePin, 48);
 }
