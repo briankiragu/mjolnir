@@ -3,7 +3,6 @@
 #include <Arduino_JSON.h>
 #include <ArduinoMqttClient.h>
 
-#include <TrafficLight.h>
 #include <Connectivity.h>
 
 Connectivity::Connectivity(
