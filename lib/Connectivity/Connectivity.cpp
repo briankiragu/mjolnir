@@ -123,10 +123,12 @@ void Connectivity::sendMQTTPayload(TrafficStatuses status, uint16_t duration)
     getMqttClient()->endMessage();
 }
 
-JSONVar Connectivity::receiveMQTTPayload(int messageSize)
+MQTTPayload Connectivity::receiveMQTTPayload(int messageSize)
 {
     // Variable to store the incoming message.
-    String payload;
+    String data;
+    JSONVar parsedData;
+    MQTTPayload payload;
 
     // We received a message, print out the topic and contents
     Serial.println("Received a message with topic '");
@@ -138,12 +140,20 @@ JSONVar Connectivity::receiveMQTTPayload(int messageSize)
     // use the Stream interface to get the contents
     while (getMqttClient()->available())
     {
-        payload += (char)getMqttClient()->read();
+        data += (char)getMqttClient()->read();
     }
 
-    // Log the incoming payload.
-    Serial.println("The payload is " + payload);
+    // Log the incoming data.
+    Serial.println("The data is " + data);
+
+    // Parse the JSON.
+    parsedData = JSON.parse(data);
+
+    // Update the struct.
+    // payload.status = parsedData["status"];
+    payload.status = GREEN;
+    payload.duration = parsedData["duration"];
 
     // Return the contents.
-    return JSON.parse(payload);
+    return payload;
 }

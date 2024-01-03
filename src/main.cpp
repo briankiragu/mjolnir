@@ -48,16 +48,18 @@ void updateTraffic(TrafficStatuses status, uint16_t duration)
     trafficLight.updateColourAndDuration(status, duration);
 
     // Send the data over MQTT.
-    connection.sendMQTTPayload(trafficLight.getStatus(), trafficLight.getDuration());
+    connection.sendMQTTPayload(
+        trafficLight.getStatus(),
+        trafficLight.getDuration());
 }
 
 void onMqttMessage(int messageSize)
 {
     // Receive, parse and return the incoming data from MQTT.
-    JSONVar payload = connection.receiveMQTTPayload(messageSize);
+    MQTTPayload payload = connection.receiveMQTTPayload(messageSize);
 
     // Update the traffic light's colour to the status.
-    updateTraffic(AMBER, payload["duration"]);
+    updateTraffic(payload.status, payload.duration);
 }
 
 void setup()

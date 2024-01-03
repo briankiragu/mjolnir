@@ -1,6 +1,12 @@
 #ifndef CONNECTIVITY_H
 #define CONNECTIVITY_H
 
+struct MQTTPayload
+{
+    TrafficStatuses status;
+    uint16_t duration;
+};
+
 class Connectivity
 {
 private:
@@ -40,7 +46,7 @@ public:
     void sendMQTTPayload(TrafficStatuses status, uint16_t duration);
 
     // Receive data over MQTT.
-    JSONVar receiveMQTTPayload(int messageSize);
+    MQTTPayload receiveMQTTPayload(int messageSize);
 };
 
 #endif
