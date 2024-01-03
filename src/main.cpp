@@ -34,6 +34,13 @@ WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
 TrafficLight trafficLight(RED_PIN, GREEN_PIN, BLUE_PIN);
+Connectivity connection(
+    &mqttClient,
+    deviceId,
+    mqttInboundTopic,
+    mqttOutboundTopic,
+    mqttUsername,
+    mqttPassword);
 
 void updateTraffic(TrafficStatuses status, uint16_t duration)
 {
@@ -41,17 +48,13 @@ void updateTraffic(TrafficStatuses status, uint16_t duration)
     trafficLight.updateColourAndDuration(status, duration);
 
     // Send the data over MQTT.
-    sendPayload(
-        &mqttClient,
-        mqttOutboundTopic,
-        trafficLight.getStatus(),
-        trafficLight.getDuration());
+    connection.sendMQTTPayload(trafficLight.getStatus(), trafficLight.getDuration());
 }
 
 void onMqttMessage(int messageSize)
 {
     // Receive, parse and return the incoming data from MQTT.
-    JSONVar payload = receivePayload(&mqttClient, messageSize);
+    JSONVar payload = connection.receiveMQTTPayload(messageSize);
 
     // Update the traffic light's colour to the status.
     updateTraffic(AMBER, payload["duration"]);
@@ -68,17 +71,10 @@ void setup()
     trafficLight.setup();
 
     // Setup the Wi-Fi connection.
-    setupNetworkAccess(networkSSID, networkPassword);
+    connection.setupNetworkAccess(networkSSID, networkPassword);
 
     // Setup the MQTT connection.
-    setupMQTT(
-        &mqttClient,
-        deviceId,
-        mqttUsername,
-        mqttPassword,
-        mqttBroker,
-        mqttPort,
-        mqttInboundTopic);
+    connection.setupMQTT(mqttBroker, mqttPort);
 
     // Setup complete text.
     Serial.println("Setup complete. Mjolnir is starting.");
@@ -89,10 +85,10 @@ void loop()
     // Call poll() regularly to allow the library
     // to send MQTT keep alives
     // which avoids being disconnected by the broker.
-    mqttClient.poll();
+    connection.getMqttClient()->poll();
 
     // Check if there is an inbound message.
-    mqttClient.onMessage(onMqttMessage);
+    connection.getMqttClient()->onMessage(onMqttMessage);
 
     // Update the traffic light and status to RED.
     updateTraffic(RED, 3000);
