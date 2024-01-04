@@ -82,25 +82,31 @@ void TrafficLight::enqueueTraffic(TrafficPayload payload, uint queueSize)
 
 void TrafficLight::updateTraffic()
 {
-    // Change the color depending on the colour.
-    switch (getState().colour)
+    for (size_t i = 0; i < sizeof(queue); i++)
     {
-    case RED:
-        turnRed();
-        break;
+        // Set the current traffic state.
+        setState(queue[i]);
 
-    case AMBER:
-        turnAmber();
-        break;
+        // Change the color depending on the colour.
+        switch (getState().colour)
+        {
+        case RED:
+            turnRed();
+            break;
 
-    case GREEN:
-        turnGreen();
-        break;
+        case AMBER:
+            turnAmber();
+            break;
 
-    default:
-        break;
+        case GREEN:
+            turnGreen();
+            break;
+
+        default:
+            break;
+        }
+
+        // Maintain the colour for the specified duration.
+        delay(getState().duration);
     }
-
-    // Maintain the colour for the specified duration.
-    delay(getState().duration);
 }
