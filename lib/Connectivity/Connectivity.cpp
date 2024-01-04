@@ -114,7 +114,7 @@ void Connectivity::sendMQTTPayload(MQTTPayload payload)
 {
     // Build the JSON object.
     JSONVar data;
-    data["status"] = payload.status;
+    data["colour"] = payload.colour;
     data["duration"] = payload.duration;
 
     getMqttClient()->beginMessage(getMqttOutboundTopic());
@@ -149,7 +149,7 @@ MQTTPayload Connectivity::receiveMQTTPayload(int messageSize)
     parsedData = JSON.parse(data);
 
     // Update the struct.
-    payload.status = parsedData["status"];
+    payload.colour = parsedData["colour"];
     payload.duration = parsedData["duration"];
 
     // Return the contents.

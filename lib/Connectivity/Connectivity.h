@@ -3,7 +3,7 @@
 
 struct MQTTPayload
 {
-    uint8_t status;
+    uint8_t colour;
     uint16_t duration;
 };
 

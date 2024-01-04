@@ -13,9 +13,9 @@ TrafficLight::TrafficLight(
 }
 
 // Getters
-TrafficStatuses TrafficLight::getStatus()
+TrafficColours TrafficLight::getStatus()
 {
-    return status;
+    return colour;
 }
 
 uint16_t TrafficLight::getDuration()
@@ -24,9 +24,9 @@ uint16_t TrafficLight::getDuration()
 }
 
 // Setters
-void TrafficLight::setStatus(TrafficStatuses s)
+void TrafficLight::setStatus(TrafficColours s)
 {
-    status = s;
+    colour = s;
 }
 
 void TrafficLight::setDuration(uint16_t d)
@@ -70,18 +70,18 @@ void TrafficLight::setup()
     delay(10);
 }
 
-/// @brief Update the status and duration.
-/// @param status
+/// @brief Update the colour and duration.
+/// @param colour
 /// @param duration
 void TrafficLight::updateColourAndDuration(
-    TrafficStatuses status,
+    TrafficColours colour,
     uint16_t duration)
 {
-    // Update the traffic light's status and duration.
-    setStatus(status);
+    // Update the traffic light's colour and duration.
+    setStatus(colour);
     setDuration(duration);
 
-    // Change the color depending on the status.
+    // Change the color depending on the colour.
     switch (getStatus())
     {
     case RED:

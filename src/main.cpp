@@ -42,13 +42,13 @@ Connectivity connection(
     mqttUsername,
     mqttPassword);
 
-void updateTraffic(TrafficStatuses status, uint16_t duration)
+void updateTraffic(TrafficColours colour, uint16_t duration)
 {
     // Initialise the payload.
-    MQTTPayload payload = {status, duration};
+    MQTTPayload payload = {colour, duration};
 
-    // Update the traffic light's colour to the status.
-    trafficLight.updateColourAndDuration(status, duration);
+    // Update the traffic light's colour to the colour.
+    trafficLight.updateColourAndDuration(colour, duration);
 
     // Send the data over MQTT.
     connection.sendMQTTPayload(payload);
@@ -59,8 +59,8 @@ void onMqttMessage(int messageSize)
     // Receive, parse and return the incoming data from MQTT.
     MQTTPayload payload = connection.receiveMQTTPayload(messageSize);
 
-    // Update the traffic light's colour to the status.
-    updateTraffic((TrafficStatuses)payload.status, payload.duration);
+    // Update the traffic light's colour to the colour.
+    updateTraffic((TrafficColours)payload.colour, payload.duration);
 }
 
 void setup()
@@ -93,12 +93,12 @@ void loop()
     // Check if there is an inbound message.
     connection.getMqttClient()->onMessage(onMqttMessage);
 
-    // Update the traffic light and status to RED.
+    // Update the traffic light and colour to RED.
     updateTraffic(RED, 3000);
 
-    // Update the traffic light and status to AMBER.
+    // Update the traffic light and colour to AMBER.
     updateTraffic(AMBER, 2000);
 
-    // Update the traffic light and status to GREEN.
+    // Update the traffic light and colour to GREEN.
     updateTraffic(GREEN, 5000);
 }
