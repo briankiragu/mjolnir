@@ -13,25 +13,15 @@ TrafficLight::TrafficLight(
 }
 
 // Getters
-TrafficColours TrafficLight::getStatus()
+TrafficState TrafficLight::getState()
 {
-    return colour;
-}
-
-uint16_t TrafficLight::getDuration()
-{
-    return duration;
+    return state;
 }
 
 // Setters
-void TrafficLight::setStatus(TrafficColours s)
+void TrafficLight::setState(TrafficState s)
 {
-    colour = s;
-}
-
-void TrafficLight::setDuration(uint16_t d)
-{
-    duration = d;
+    state = s;
 }
 
 void TrafficLight::turnRed()
@@ -55,7 +45,6 @@ void TrafficLight::turnGreen()
     analogWrite(bluePin, 48);
 }
 
-/// @brief Initialise pins
 void TrafficLight::setup()
 {
     // Built-in LED pin.
@@ -70,19 +59,31 @@ void TrafficLight::setup()
     delay(10);
 }
 
-/// @brief Update the colour and duration.
-/// @param colour
-/// @param duration
-void TrafficLight::updateColourAndDuration(
-    TrafficColours colour,
-    uint16_t duration)
+void TrafficLight::enqueueTraffic(TrafficPayload payload, uint queueSize)
 {
-    // Update the traffic light's colour and duration.
-    setStatus(colour);
-    setDuration(duration);
+    // Check if the new payload is newer.
+    bool isNewer = payload.timestamp > timestamp;
 
+    // Check if the new payload is a higher priority.
+    bool isUrgent = payload.priority > priority;
+
+    // If the element is newer and urgent, replace the list.
+    if (isNewer && isUrgent)
+    {
+        //
+    }
+
+    // If the element is newer but not urgent, append it to the list.
+    if (isNewer && !isUrgent)
+    {
+        //
+    }
+}
+
+void TrafficLight::updateTraffic()
+{
     // Change the color depending on the colour.
-    switch (getStatus())
+    switch (getState().colour)
     {
     case RED:
         turnRed();
@@ -101,5 +102,5 @@ void TrafficLight::updateColourAndDuration(
     }
 
     // Maintain the colour for the specified duration.
-    delay(getDuration());
+    delay(getState().duration);
 }

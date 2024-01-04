@@ -1,6 +1,10 @@
 #ifndef TRAFFICLIGHT_H
 #define TRAFFICLIGHT_H
 
+#include <TrafficLightQueue.h>
+
+#define MAX_STATES_COUNT 100
+
 enum TrafficPriorities
 {
     EMERGENCY,
@@ -9,24 +13,11 @@ enum TrafficPriorities
     MINOR
 };
 
-enum TrafficColours
-{
-    RED,
-    AMBER,
-    GREEN
-};
-
-struct TrafficState
-{
-    TrafficColours colour;
-    uint16_t duration;
-};
-
 struct TrafficPayload
 {
     TrafficPriorities priority;
     uint timestamp;
-    TrafficState *states;
+    TrafficState *queue;
 };
 
 class TrafficLight
@@ -36,8 +27,14 @@ private:
     uint8_t greenPin;
     uint8_t bluePin;
 
-    TrafficColours colour;
-    uint16_t duration;
+    uint timestamp;
+
+    TrafficPriorities priority;
+
+    TrafficState *queue;
+    uint8_t queueSize;
+
+    TrafficState state;
 
     void turnRed();
     void turnAmber();
@@ -51,18 +48,19 @@ public:
         const uint8_t BLUE_PIN);
 
     // Getters.
-    TrafficColours getStatus();
-    uint16_t getDuration();
+    TrafficState getState();
 
     // Setters.
-    void setStatus(TrafficColours s);
-    void setDuration(uint16_t d);
+    void setState(TrafficState s);
 
     // Initialise pins on microcontroller.
     void setup();
 
+    // Load the traffic payload.
+    void enqueueTraffic(TrafficPayload paylod, uint queueSize);
+
     // Update the colour and duration.
-    void updateColourAndDuration(TrafficColours colour, uint16_t duration);
+    void updateTraffic();
 };
 
 #endif

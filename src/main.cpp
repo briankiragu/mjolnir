@@ -24,7 +24,7 @@ const String networkPassword = NETWORK_PASS;
 const String mqttUsername = MQTT_USERNAME;
 const String mqttPassword = MQTT_PASSWORD;
 const String mqttBroker = MQTT_BROKER;
-const uint16_t mqttPort = MQTT_PORT;
+const uint mqttPort = MQTT_PORT;
 
 // MQTT topics.
 const String mqttInboundTopic = MQTT_INBOUND_TOPIC;
@@ -42,31 +42,25 @@ Connectivity connection(
     mqttUsername,
     mqttPassword);
 
-void updateTraffic(TrafficColours colour, uint16_t duration)
-{
-    // Initialise the payload.
-    MQTTPayload payload = {colour, duration};
-
-    // Update the traffic light's colour to the colour.
-    trafficLight.updateColourAndDuration(colour, duration);
-
-    // Send the data over MQTT.
-    connection.sendMQTTPayload(payload);
-}
-
 void onMqttMessage(int messageSize)
 {
     // Receive, parse and return the incoming data from MQTT.
-    MQTTPayload payload = connection.receiveMQTTPayload(messageSize);
+    MQTTPayload data = connection.receiveMQTTData(messageSize);
 
-    // Update the traffic light's colour to the colour.
-    updateTraffic((TrafficColours)payload.colour, payload.duration);
+    // Loop through the incoming traffic queue.
+    for (size_t i = 0; i < sizeof(data.payload.queue); i++)
+    {
+        // Update the traffic light's colour to the colour.
+        trafficLight.updateTraffic(data.payload.queue[i]);
+
+        // Send the data over MQTT.
+        connection.sendTrafficState(trafficLight.getState());
+    }
 }
 
 void setup()
 {
     // Serial output.
-    Serial.flush();
     Serial.begin(115200);
     Serial.println();
 
@@ -85,20 +79,10 @@ void setup()
 
 void loop()
 {
-    // Call poll() regularly to allow the library
-    // to send MQTT keep alives
-    // which avoids being disconnected by the broker.
+    // Call poll() regularly to allow the library to send 
+    // MQTT keep-alives which avoids being disconnected by the broker.
     connection.getMqttClient()->poll();
 
     // Check if there is an inbound message.
     connection.getMqttClient()->onMessage(onMqttMessage);
-
-    // Update the traffic light and colour to RED.
-    updateTraffic(RED, 3000);
-
-    // Update the traffic light and colour to AMBER.
-    updateTraffic(AMBER, 2000);
-
-    // Update the traffic light and colour to GREEN.
-    updateTraffic(GREEN, 5000);
 }

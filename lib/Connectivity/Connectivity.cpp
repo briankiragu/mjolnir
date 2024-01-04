@@ -4,6 +4,7 @@
 #include <ArduinoMqttClient.h>
 
 #include <Connectivity.h>
+#include <TrafficLight.h>
 
 Connectivity::Connectivity(
     MqttClient *mqttClient,
@@ -82,7 +83,7 @@ void Connectivity::setupNetworkAccess(const String ssid, const String password)
     Serial.println(WiFi.localIP());
 }
 
-void Connectivity::setupMQTT(const String mqttBroker, const uint16_t mqttPort)
+void Connectivity::setupMQTT(const String mqttBroker, const uint mqttPort)
 {
     Serial.println(
         "Device ID '" + getDeviceId() +
@@ -110,48 +111,49 @@ void Connectivity::setupMQTT(const String mqttBroker, const uint16_t mqttPort)
     getMqttClient()->subscribe(getMqttInboundTopic());
 }
 
-void Connectivity::sendMQTTPayload(MQTTPayload payload)
-{
-    // Build the JSON object.
-    JSONVar data;
-    data["colour"] = payload.colour;
-    data["duration"] = payload.duration;
-
-    getMqttClient()->beginMessage(getMqttOutboundTopic());
-    getMqttClient()->print(JSON.stringify(data));
-    getMqttClient()->endMessage();
-}
-
-MQTTPayload Connectivity::receiveMQTTPayload(int messageSize)
+MQTTPayload Connectivity::receiveMQTTData(int messageSize)
 {
     // Variable to store the incoming message.
-    String data;
-    JSONVar parsedData;
-    MQTTPayload payload;
+    String dataAsString;
+    JSONVar dataAsJSON;
+    MQTTPayload dataAsStruct;
 
-    // We received a message, print out the topic and contents
+    // We received a message, print out the topic and contents.
     Serial.println("Received a message with topic '");
     Serial.print(getMqttClient()->messageTopic());
     Serial.print("', length ");
     Serial.print(messageSize);
     Serial.println(" bytes:");
 
-    // use the Stream interface to get the contents
+    // use the Stream interface to get the contents.
     while (getMqttClient()->available())
     {
-        data += (char)getMqttClient()->read();
+        dataAsString += (char)getMqttClient()->read();
     }
 
     // Log the incoming data.
-    Serial.println("The data is " + data);
+    Serial.println("The data is " + dataAsString);
 
     // Parse the JSON.
-    parsedData = JSON.parse(data);
+    dataAsJSON = JSON.parse(dataAsString);
 
-    // Update the struct.
-    payload.colour = parsedData["colour"];
-    payload.duration = parsedData["duration"];
+    // Populate the struct.
+    dataAsStruct.priority = dataAsJSON["priority"];
+    dataAsStruct.timestamp = dataAsJSON["timestamp"];
+    dataAsStruct.queue = dataAsJSON["queue"];
 
     // Return the contents.
-    return payload;
+    return dataAsStruct;
+}
+
+void Connectivity::sendTrafficState(TrafficState state)
+{
+    // Build the JSON object.
+    JSONVar data;
+    data["colour"] = state.colour;
+    data["duration"] = state.duration;
+
+    getMqttClient()->beginMessage(getMqttOutboundTopic());
+    getMqttClient()->print(JSON.stringify(data));
+    getMqttClient()->endMessage();
 }
