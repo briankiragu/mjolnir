@@ -1,10 +1,13 @@
 #ifndef CONNECTIVITY_H
 #define CONNECTIVITY_H
 
+#include <TrafficLight.h>
+
 struct MQTTPayload
 {
-    uint8_t colour;
-    uint16_t duration;
+    TrafficPriorities priority;
+    uint timestamp;
+    TrafficState queue[MAX_STATES_COUNT];
 };
 
 class Connectivity
@@ -40,13 +43,13 @@ public:
 
     // Setup network and MQTT access.
     void setupNetworkAccess(String ssid, String password);
-    void setupMQTT(const String mqttBroker, const uint16_t mqttPort);
-
-    // Send data over MQTT.
-    void sendMQTTPayload(MQTTPayload payload);
+    void setupMQTT(const String mqttBroker, const uint mqttPort);
 
     // Receive data over MQTT.
-    MQTTPayload receiveMQTTPayload(int messageSize);
+    MQTTPayload receiveMQTTData(int messageSize);
+
+    // Send data over MQTT.
+    void sendTrafficState(TrafficState state);
 };
 
 #endif

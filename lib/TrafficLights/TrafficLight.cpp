@@ -13,25 +13,55 @@ TrafficLight::TrafficLight(
 }
 
 // Getters
-TrafficColours TrafficLight::getStatus()
+uint TrafficLight::getTimestamp()
 {
-    return colour;
+    return timestamp;
 }
 
-uint16_t TrafficLight::getDuration()
+TrafficPriorities TrafficLight::getPriority()
 {
-    return duration;
+    return priority;
+}
+
+TrafficState *TrafficLight::getQueue()
+{
+    return queue;
+}
+
+uint TrafficLight::getQueueSize()
+{
+    return queueSize;
+}
+
+TrafficState TrafficLight::getState()
+{
+    return state;
 }
 
 // Setters
-void TrafficLight::setStatus(TrafficColours s)
+void TrafficLight::setTimestamp(uint t)
 {
-    colour = s;
+    timestamp = t;
 }
 
-void TrafficLight::setDuration(uint16_t d)
+void TrafficLight::setPriority(TrafficPriorities p)
 {
-    duration = d;
+    priority = p;
+}
+
+void TrafficLight::setQueue(TrafficState *q)
+{
+    queue = q;
+}
+
+void TrafficLight::setQueueSize(uint s)
+{
+    queueSize = s;
+}
+
+void TrafficLight::setState(TrafficState s)
+{
+    state = s;
 }
 
 void TrafficLight::turnRed()
@@ -55,7 +85,6 @@ void TrafficLight::turnGreen()
     analogWrite(bluePin, 48);
 }
 
-/// @brief Initialise pins
 void TrafficLight::setup()
 {
     // Built-in LED pin.
@@ -70,36 +99,55 @@ void TrafficLight::setup()
     delay(10);
 }
 
-/// @brief Update the colour and duration.
-/// @param colour
-/// @param duration
-void TrafficLight::updateColourAndDuration(
-    TrafficColours colour,
-    uint16_t duration)
+void TrafficLight::enqueueTraffic(TrafficPayload payload, uint queueSize)
 {
-    // Update the traffic light's colour and duration.
-    setStatus(colour);
-    setDuration(duration);
+    // Check if the new payload is newer.
+    bool isNewer = payload.timestamp > getTimestamp();
 
-    // Change the color depending on the colour.
-    switch (getStatus())
+    // Check if the new payload is a higher priority.
+    bool isUrgent = payload.priority > getPriority();
+
+    // If the element is newer and urgent, replace the list.
+    if (isNewer && isUrgent)
     {
-    case RED:
-        turnRed();
-        break;
-
-    case AMBER:
-        turnAmber();
-        break;
-
-    case GREEN:
-        turnGreen();
-        break;
-
-    default:
-        break;
+        setQueue(payload.queue);
+        setQueueSize(queueSize);
     }
 
-    // Maintain the colour for the specified duration.
-    delay(getDuration());
+    // If the element is newer but not urgent, append it to the list.
+    if (isNewer && !isUrgent)
+    {
+        setQueueSize(getQueueSize() + queueSize);
+    }
+}
+
+void TrafficLight::updateTraffic()
+{
+    for (size_t i = 0; i < sizeof(getQueue()); i++)
+    {
+        // Set the current traffic state.
+        setState(getQueue()[i]);
+
+        // Change the color depending on the colour.
+        switch (getState().colour)
+        {
+        case RED:
+            turnRed();
+            break;
+
+        case AMBER:
+            turnAmber();
+            break;
+
+        case GREEN:
+            turnGreen();
+            break;
+
+        default:
+            break;
+        }
+
+        // Maintain the colour for the specified duration.
+        delay(getState().duration);
+    }
 }
