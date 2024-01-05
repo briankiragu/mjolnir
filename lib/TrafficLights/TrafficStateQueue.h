@@ -46,9 +46,6 @@ private:
 public:
     Node *head = nullptr;
 
-    // Destructor.
-    ~TrafficStateQueue();
-
     // Check if the queue is empty.
     bool isEmpty();
 
@@ -66,6 +63,9 @@ public:
 
     // Clear the linked list.
     void clear();
+
+    // Destructor.
+    ~TrafficStateQueue();
 };
 
 #endif

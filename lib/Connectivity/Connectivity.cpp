@@ -1,6 +1,6 @@
 #include <WiFi.h>
 
-#include <Arduino_JSON.h>
+#include <ArduinoJson.h>
 #include <ArduinoMqttClient.h>
 
 #include <Connectivity.h>
@@ -81,10 +81,9 @@ void Connectivity::setupMQTT(const String mqttBroker, const uint mqttPort)
 
 TrafficPayload Connectivity::receiveMQTTData(int messageSize)
 {
-    // Variable to store the incoming message.
-    String dataAsString;
-    JSONVar dataAsJSON;
-    TrafficPayload dataAsStruct;
+    String data;
+    JsonDocument doc;
+    TrafficPayload payload;
 
     // We received a message, print out the topic and contents.
     Serial.println("Received a message with topic '");
@@ -96,32 +95,37 @@ TrafficPayload Connectivity::receiveMQTTData(int messageSize)
     // use the Stream interface to get the contents.
     while (getMqttClient()->available())
     {
-        dataAsString += (char)getMqttClient()->read();
+        data += (char)getMqttClient()->read();
     }
 
     // Log the incoming data.
-    Serial.println("The data is " + dataAsString);
+    Serial.println("The data is " + data);
 
-    // Parse the JSON.
-    dataAsJSON = JSON.parse(dataAsString);
+    // Get the data from the string.
+    deserializeJson(doc, data);
 
     // Populate the struct.
-    dataAsStruct.priority = dataAsJSON["priority"];
-    dataAsStruct.timestamp = dataAsJSON["timestamp"];
-    dataAsStruct.queue = dataAsJSON["queue"];
+    payload.priority = doc["priority"];
+    payload.timestamp = doc["timestamp"];
+    payload.queue = doc["queue"];
 
     // Return the contents.
-    return dataAsStruct;
+    return payload;
 }
 
 void Connectivity::sendTrafficState(TrafficState state)
 {
     // Build the JSON object.
-    JSONVar data;
-    data["colour"] = state.colour;
-    data["duration"] = state.duration;
+    String data;
+    JsonDocument doc;
+
+    doc["colour"] = state.colour;
+    doc["duration"] = state.duration;
+
+    // Convert the data to a string.
+    serializeJson(doc, data);
 
     getMqttClient()->beginMessage(mqttOutboundTopic);
-    getMqttClient()->print(JSON.stringify(data));
+    getMqttClient()->print(data);
     getMqttClient()->endMessage();
 }

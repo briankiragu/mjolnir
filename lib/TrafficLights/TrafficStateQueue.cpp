@@ -1,11 +1,6 @@
 #include <Arduino.h>
 #include <TrafficStateQueue.h>
 
-TrafficStateQueue::~TrafficStateQueue()
-{
-    clear();
-}
-
 // Check if the queue is empty.
 bool TrafficStateQueue::isEmpty()
 {
@@ -78,4 +73,9 @@ void TrafficStateQueue::clear()
 
     tail = nullptr;
     size = 0;
+}
+
+TrafficStateQueue::~TrafficStateQueue()
+{
+    clear();
 }

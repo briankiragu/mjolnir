@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-#include <Arduino_JSON.h>
 #include <ArduinoMqttClient.h>
 
 #include "secrets.h"
