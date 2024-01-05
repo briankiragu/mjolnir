@@ -47,7 +47,9 @@ void onMqttMessage(int messageSize)
     TrafficPayload payload = connection.receiveMQTTData(messageSize);
 
     // Load the traffic.
-    trafficLight.loadTraffic(payload, sizeof(payload.queue));
+    trafficLight.loadTraffic(payload);
+
+    trafficLight.queue.display();
 
     // Loop through the queue...
     while (!trafficLight.queue.isEmpty())
@@ -73,10 +75,7 @@ void setup()
     trafficLight.setup();
 
     // Setup the Wi-Fi connection.
-    connection.setupNetworkAccess(networkSSID, networkPassword);
-
-    // Setup the MQTT connection.
-    connection.setupMQTT(mqttBroker, mqttPort);
+    connection.setup(networkSSID, networkPassword, mqttBroker, mqttPort);
 
     // Setup complete text.
     Serial.println("Setup complete. Mjolnir is starting.");

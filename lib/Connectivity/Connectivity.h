@@ -34,9 +34,17 @@ public:
     void setMqttInboundTopic(String t);
     void setMqttOutboundTopic(String t);
 
-    // Setup network and MQTT access.
+    // Setup network.
     void setupNetworkAccess(String ssid, String password);
+    // Setup MQTT access.
     void setupMQTT(const String mqttBroker, const uint mqttPort);
+
+    // Setup Network & MQTT access.
+    void setup(
+        String ssid,
+        String password,
+        const String mqttBroker,
+        const uint mqttPort);
 
     // Receive data over MQTT.
     TrafficPayload receiveMQTTData(int messageSize);

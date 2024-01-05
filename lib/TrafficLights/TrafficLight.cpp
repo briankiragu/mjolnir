@@ -12,7 +12,7 @@ TrafficLight::TrafficLight(
     bluePin = BLUE_PIN;
 }
 
-void TrafficLight::loadTraffic(TrafficPayload payload, uint size)
+void TrafficLight::loadTraffic(TrafficPayload payload)
 {
     // Check if the incoming payload is newer.
     bool isNewer = payload.timestamp > timestamp;
@@ -35,7 +35,7 @@ void TrafficLight::loadTraffic(TrafficPayload payload, uint size)
     // Update the traffic data.
     timestamp = payload.timestamp;
     priority = payload.priority;
-    queue.append(payload.queue, size);
+    queue.append(payload.queue);
 }
 
 void TrafficLight::updateTraffic(TrafficState state)

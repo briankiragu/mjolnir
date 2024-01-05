@@ -112,6 +112,17 @@ void Connectivity::setupMQTT(const String mqttBroker, const uint mqttPort)
     getMqttClient()->subscribe(getMqttInboundTopic());
 }
 
+// Setup Network & MQTT access.
+void Connectivity::setup(
+    String ssid,
+    String password,
+    const String mqttBroker,
+    const uint mqttPort)
+{
+    setupNetworkAccess(ssid, password);
+    setupMQTT(mqttBroker, mqttPort);
+}
+
 TrafficPayload Connectivity::receiveMQTTData(int messageSize)
 {
     String data;

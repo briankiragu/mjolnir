@@ -7,18 +7,6 @@ bool TrafficStateQueue::isEmpty()
     return head == nullptr;
 }
 
-// Get the first item in the linked list.
-TrafficState *TrafficStateQueue::peek()
-{
-    if (!isEmpty())
-    {
-        return &head->state;
-    }
-
-    // Return nullptr when the queue is empty
-    return nullptr;
-}
-
 // Add an item to the linked list.
 void TrafficStateQueue::enqueue(TrafficState state)
 {
@@ -27,12 +15,9 @@ void TrafficStateQueue::enqueue(TrafficState state)
 
     // If the head is null (this is the first element),
     // point both head and tail to it.
-    if (head == nullptr)
-    {
+    if (head == nullptr) {
         head = newNode;
-    }
-    else
-    {
+    } else {
         tail->next = newNode;
     }
     tail = newNode;
@@ -55,9 +40,9 @@ void TrafficStateQueue::dequeue()
 }
 
 // Add the items from a regular list onto the end.
-void TrafficStateQueue::append(TrafficState *list, uint size)
+void TrafficStateQueue::append(TrafficState list[MAX_STATES_COUNT])
 {
-    for (size_t i = 0; i < size; i++)
+    for (size_t i = 0; i < MAX_STATES_COUNT; i++)
     {
         enqueue(list[i]);
     }
@@ -73,6 +58,30 @@ void TrafficStateQueue::clear()
 
     tail = nullptr;
     size = 0;
+}
+
+// Get the first item in the linked list.
+TrafficState *TrafficStateQueue::peek()
+{
+    if (!isEmpty())
+    {
+        return &head->state;
+    }
+
+    // Return nullptr when the queue is empty
+    return nullptr;
+}
+
+// Method to display the linked list
+void TrafficStateQueue::display()
+{
+    Node *current = head; // Start from the head
+    while (current != nullptr)
+    {
+        Serial.print(current->state.colour + " " + current->state.duration);
+        current = current->next; // Move to the next node
+    }
+    Serial.println();
 }
 
 TrafficStateQueue::~TrafficStateQueue()

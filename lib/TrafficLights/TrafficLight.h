@@ -15,7 +15,7 @@ struct TrafficPayload
 {
     TrafficPriorities priority;
     uint timestamp;
-    TrafficState *queue;
+    TrafficState queue[MAX_STATES_COUNT];
 };
 
 class TrafficLight
@@ -45,7 +45,7 @@ public:
     void setup();
 
     // Load the traffic payload.
-    void loadTraffic(TrafficPayload payload, uint size);
+    void loadTraffic(TrafficPayload payload);
 
     // Update the colour and duration.
     void updateTraffic(TrafficState state);

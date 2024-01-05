@@ -40,11 +40,11 @@ private:
         }
     };
 
+    Node *head = nullptr;
     Node *tail = nullptr;
     uint size = 0;
 
 public:
-    Node *head = nullptr;
 
     // Check if the queue is empty.
     bool isEmpty();
@@ -59,10 +59,13 @@ public:
     void dequeue();
 
     // Add the items from a regular list onto the end.
-    void append(TrafficState *list, uint size);
+    void append(TrafficState list[MAX_STATES_COUNT]);
 
     // Clear the linked list.
     void clear();
+
+    // Method to display the linked list
+    void display();
 
     // Destructor.
     ~TrafficStateQueue();
