@@ -64,9 +64,6 @@ public:
     // Clear the linked list.
     void clear();
 
-    // Method to display the linked list
-    void display();
-
     // Destructor.
     ~TrafficStateQueue();
 };

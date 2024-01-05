@@ -151,7 +151,7 @@ TrafficPayload Connectivity::receiveMQTTData(int messageSize)
     // Populate the struct.
     payload.priority = doc["priority"];
     payload.timestamp = doc["timestamp"];
-    // payload.queue = doc["queue"];
+    payload.queue = doc["queue"];
 
     // Return the contents.
     return payload;

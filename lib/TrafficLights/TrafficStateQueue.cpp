@@ -15,9 +15,12 @@ void TrafficStateQueue::enqueue(TrafficState state)
 
     // If the head is null (this is the first element),
     // point both head and tail to it.
-    if (head == nullptr) {
+    if (head == nullptr)
+    {
         head = newNode;
-    } else {
+    }
+    else
+    {
         tail->next = newNode;
     }
     tail = newNode;
@@ -72,18 +75,7 @@ TrafficState *TrafficStateQueue::peek()
     return nullptr;
 }
 
-// Method to display the linked list
-void TrafficStateQueue::display()
-{
-    Node *current = head; // Start from the head
-    while (current != nullptr)
-    {
-        Serial.print(current->state.colour + " " + current->state.duration);
-        current = current->next; // Move to the next node
-    }
-    Serial.println();
-}
-
+// Destructor.
 TrafficStateQueue::~TrafficStateQueue()
 {
     clear();

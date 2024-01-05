@@ -49,8 +49,6 @@ void onMqttMessage(int messageSize)
     // Load the traffic.
     trafficLight.loadTraffic(payload);
 
-    trafficLight.queue.display();
-
     // Loop through the queue...
     while (!trafficLight.queue.isEmpty())
     {
