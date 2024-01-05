@@ -14,13 +14,11 @@ Connectivity::Connectivity(
     const String mqttUsername,
     const String mqttPassword)
 {
+    // Set the MQTT client.
     setMqttClient(mqttClient);
-    setDeviceId(id);
-    setMqttInboundTopic(mqttInboundTopic);
-    setMqttOutboundTopic(mqttOutboundTopic);
 
     // Each client must have a unique client ID.
-    getMqttClient()->setId(getDeviceId());
+    getMqttClient()->setId(deviceId);
 
     // Provide the username and password for authentication.
     getMqttClient()->setUsernamePassword(mqttUsername, mqttPassword);
@@ -31,39 +29,9 @@ MqttClient *Connectivity::getMqttClient()
     return mqttClient;
 }
 
-String Connectivity::getDeviceId()
-{
-    return deviceId;
-}
-
-String Connectivity::getMqttInboundTopic()
-{
-    return mqttInboundTopic;
-}
-
-String Connectivity::getMqttOutboundTopic()
-{
-    return mqttOutboundTopic;
-}
-
 void Connectivity::setMqttClient(MqttClient *client)
 {
     mqttClient = client;
-}
-
-void Connectivity::setDeviceId(String id)
-{
-    deviceId = id;
-}
-
-void Connectivity::setMqttInboundTopic(String t)
-{
-    mqttInboundTopic = t;
-}
-
-void Connectivity::setMqttOutboundTopic(String t)
-{
-    mqttOutboundTopic = t;
 }
 
 void Connectivity::setupNetworkAccess(const String ssid, const String password)
@@ -86,7 +54,7 @@ void Connectivity::setupNetworkAccess(const String ssid, const String password)
 void Connectivity::setupMQTT(const String mqttBroker, const uint mqttPort)
 {
     Serial.println(
-        "Device ID '" + getDeviceId() +
+        "Device ID '" + deviceId +
         "' is attempting to connect to the MQTT broker '" + mqttBroker +
         "' on port '" + mqttPort + "'");
 
@@ -100,15 +68,15 @@ void Connectivity::setupMQTT(const String mqttBroker, const uint mqttPort)
     }
 
     Serial.println(
-        "Device ID '" + getDeviceId() +
+        "Device ID '" + deviceId +
         "' is successfully connected to the MQTT broker!");
 
     Serial.println(
-        "Device ID '" + getDeviceId() +
-        "' is subscribing to topic '" + getMqttInboundTopic() + "'");
+        "Device ID '" + deviceId +
+        "' is subscribing to topic '" + mqttInboundTopic + "'");
 
     // Subscribe to the inbound topic to receive updates.
-    getMqttClient()->subscribe(getMqttInboundTopic());
+    getMqttClient()->subscribe(mqttInboundTopic);
 }
 
 TrafficPayload Connectivity::receiveMQTTData(int messageSize)
@@ -153,7 +121,7 @@ void Connectivity::sendTrafficState(TrafficState state)
     data["colour"] = state.colour;
     data["duration"] = state.duration;
 
-    getMqttClient()->beginMessage(getMqttOutboundTopic());
+    getMqttClient()->beginMessage(mqttOutboundTopic);
     getMqttClient()->print(JSON.stringify(data));
     getMqttClient()->endMessage();
 }

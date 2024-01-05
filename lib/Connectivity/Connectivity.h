@@ -24,15 +24,9 @@ public:
 
     // Getters.
     MqttClient *getMqttClient();
-    String getDeviceId();
-    String getMqttInboundTopic();
-    String getMqttOutboundTopic();
 
     // Setters.
     void setMqttClient(MqttClient *client);
-    void setDeviceId(String id);
-    void setMqttInboundTopic(String t);
-    void setMqttOutboundTopic(String t);
 
     // Setup network and MQTT access.
     void setupNetworkAccess(String ssid, String password);
