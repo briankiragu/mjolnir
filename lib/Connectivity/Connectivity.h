@@ -3,13 +3,6 @@
 
 #include <TrafficLight.h>
 
-struct MQTTPayload
-{
-    TrafficPriorities priority;
-    uint timestamp;
-    TrafficState queue[MAX_STATES_COUNT];
-};
-
 class Connectivity
 {
 private:
@@ -46,7 +39,7 @@ public:
     void setupMQTT(const String mqttBroker, const uint mqttPort);
 
     // Receive data over MQTT.
-    MQTTPayload receiveMQTTData(int messageSize);
+    TrafficPayload receiveMQTTData(int messageSize);
 
     // Send data over MQTT.
     void sendTrafficState(TrafficState state);

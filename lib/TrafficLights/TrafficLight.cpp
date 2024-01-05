@@ -12,16 +12,69 @@ TrafficLight::TrafficLight(
     bluePin = BLUE_PIN;
 }
 
-// Getters
-TrafficState TrafficLight::getState()
+void TrafficLight::loadTraffic(TrafficPayload payload, uint size)
 {
-    return state;
+    // Check if the incoming payload is newer.
+    bool isNewer = payload.timestamp > timestamp;
+
+    // Check if the incoming payload is of a higher priority.
+    bool isUrgent = payload.priority > priority;
+
+    // If the payload is not newer, return.
+    if (!isNewer)
+    {
+        return;
+    }
+
+    // If the element is urgent, clear the list.
+    if (isUrgent)
+    {
+        queue.clear();
+    }
+
+    // Update the traffic data.
+    timestamp = payload.timestamp;
+    priority = payload.priority;
+    queue.append(payload.queue, size);
 }
 
-// Setters
-void TrafficLight::setState(TrafficState s)
+void TrafficLight::updateTraffic(TrafficState state)
 {
-    state = s;
+    // Change the color depending on the colour.
+    switch (state.colour)
+    {
+    case RED:
+        turnRed();
+        break;
+
+    case AMBER:
+        turnAmber();
+        break;
+
+    case GREEN:
+        turnGreen();
+        break;
+
+    default:
+        break;
+    }
+
+    // Maintain the colour for the specified duration.
+    delay(state.duration);
+}
+
+void TrafficLight::setup()
+{
+    // Built-in LED pin.
+    pinMode(LED_BUILTIN, OUTPUT);
+
+    // Traffic lights pins.
+    pinMode(redPin, OUTPUT);
+    pinMode(greenPin, OUTPUT);
+    pinMode(bluePin, OUTPUT);
+
+    // Delay for pins to set.
+    delay(10);
 }
 
 void TrafficLight::turnRed()
@@ -43,70 +96,4 @@ void TrafficLight::turnGreen()
     analogWrite(redPin, 84);
     analogWrite(greenPin, 156);
     analogWrite(bluePin, 48);
-}
-
-void TrafficLight::setup()
-{
-    // Built-in LED pin.
-    pinMode(LED_BUILTIN, OUTPUT);
-
-    // Traffic lights pins.
-    pinMode(redPin, OUTPUT);
-    pinMode(greenPin, OUTPUT);
-    pinMode(bluePin, OUTPUT);
-
-    // Delay for pins to set.
-    delay(10);
-}
-
-void TrafficLight::enqueueTraffic(TrafficPayload payload, uint queueSize)
-{
-    // Check if the new payload is newer.
-    bool isNewer = payload.timestamp > timestamp;
-
-    // Check if the new payload is a higher priority.
-    bool isUrgent = payload.priority > priority;
-
-    // If the element is newer and urgent, replace the list.
-    if (isNewer && isUrgent)
-    {
-        //
-    }
-
-    // If the element is newer but not urgent, append it to the list.
-    if (isNewer && !isUrgent)
-    {
-        //
-    }
-}
-
-void TrafficLight::updateTraffic()
-{
-    for (size_t i = 0; i < sizeof(queue); i++)
-    {
-        // Set the current traffic state.
-        setState(queue[i]);
-
-        // Change the color depending on the colour.
-        switch (getState().colour)
-        {
-        case RED:
-            turnRed();
-            break;
-
-        case AMBER:
-            turnAmber();
-            break;
-
-        case GREEN:
-            turnGreen();
-            break;
-
-        default:
-            break;
-        }
-
-        // Maintain the colour for the specified duration.
-        delay(getState().duration);
-    }
 }

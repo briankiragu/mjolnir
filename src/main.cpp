@@ -45,16 +45,22 @@ Connectivity connection(
 void onMqttMessage(int messageSize)
 {
     // Receive, parse and return the incoming data from MQTT.
-    MQTTPayload data = connection.receiveMQTTData(messageSize);
+    TrafficPayload payload = connection.receiveMQTTData(messageSize);
 
-    // Loop through the incoming traffic queue.
-    for (size_t i = 0; i < sizeof(data.payload.queue); i++)
+    // Load the traffic.
+    trafficLight.loadTraffic(payload, sizeof(payload.queue));
+
+    // Loop through the queue...
+    while (!trafficLight.queue.isEmpty())
     {
         // Update the traffic light's colour to the colour.
-        trafficLight.updateTraffic(data.payload.queue[i]);
+        trafficLight.updateTraffic(*trafficLight.queue.peek());
 
         // Send the data over MQTT.
-        connection.sendTrafficState(trafficLight.getState());
+        connection.sendTrafficState(*trafficLight.queue.peek());
+
+        // Dequeue the head.
+        trafficLight.queue.dequeue();
     }
 }
 
@@ -79,7 +85,7 @@ void setup()
 
 void loop()
 {
-    // Call poll() regularly to allow the library to send 
+    // Call poll() regularly to allow the library to send
     // MQTT keep-alives which avoids being disconnected by the broker.
     connection.getMqttClient()->poll();
 

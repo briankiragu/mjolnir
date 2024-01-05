@@ -111,12 +111,12 @@ void Connectivity::setupMQTT(const String mqttBroker, const uint mqttPort)
     getMqttClient()->subscribe(getMqttInboundTopic());
 }
 
-MQTTPayload Connectivity::receiveMQTTData(int messageSize)
+TrafficPayload Connectivity::receiveMQTTData(int messageSize)
 {
     // Variable to store the incoming message.
     String dataAsString;
     JSONVar dataAsJSON;
-    MQTTPayload dataAsStruct;
+    TrafficPayload dataAsStruct;
 
     // We received a message, print out the topic and contents.
     Serial.println("Received a message with topic '");
