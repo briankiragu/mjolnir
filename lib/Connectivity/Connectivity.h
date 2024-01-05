@@ -23,10 +23,16 @@ public:
         const String mqttPassword);
 
     // Getters.
+    String getDeviceId();
     MqttClient *getMqttClient();
+    String getMqttInboundTopic();
+    String getMqttOutboundTopic();
 
     // Setters.
+    void setDeviceId(String id);
     void setMqttClient(MqttClient *client);
+    void setMqttInboundTopic(String t);
+    void setMqttOutboundTopic(String t);
 
     // Setup network and MQTT access.
     void setupNetworkAccess(String ssid, String password);
